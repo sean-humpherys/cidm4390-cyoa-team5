@@ -1,0 +1,95 @@
+# ============================================================================
+# Spanish message catalog (Español)
+# Same format and ID ranges as English.txt - see the header there.
+# Every id must match English.txt exactly.
+# ============================================================================
+
+# ---------- 1 - 99: Menu, language picker, settings (PBI Menu) ----------
+1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
+2=Opción no válida. Inténtelo de nuevo.
+3=Bienvenido al juego Elige tu propia aventura
+4=Elija: 1. Crear personaje. 2. Salir. 3. Configuración. Escriba '1', '2' o '3'.
+5=La aventura termina. Adiós.
+6=Esta parte de la aventura todavía está en construcción. Volviendo al menú principal.
+10=Configuración: 1. Cambiar idioma. 2. Cambiar color del texto. 3. Volver al menú principal. Escriba '1', '2' o '3'.
+11=Idioma cambiado a español.
+12=Elija un color de texto: 1. Verde. 2. Blanco. 3. Cian. 4. Amarillo. Escriba '1', '2', '3' o '4'.
+13=Color del texto cambiado.
+
+# ---------- 100 - 199: Character creation (PBI Class Creation) ----------
+100=¿De qué raza quieres que sea tu personaje? ¿Humano, Elfo, Enano o Mediano?
+101=¿Cuál es el nombre de tu personaje?
+102=¿Cuál es la ocupación de tu personaje? ¿Guerrero, mago, ladrón o arquero?
+103=Ahora vamos a tirar el dado para la fuerza. Escribe 'roll'
+104=Ahora tiraremos el dado para la agilidad. Escribe 'roll'
+105=Ahora tiraremos el dado para los puntos de salud. Escribe 'roll'
+106=Por favor, escribe 'roll'.
+107=¿Qué te gustaría hacer ahora? 1. Ver las estadísticas del personaje. 2. Comenzar una aventura. Escribe 1 o 2.
+110=Humano
+111=Elfo
+112=Enano
+113=Mediano
+114=Guerrero
+115=Mago
+116=Ladrón
+117=Arquero
+120=espada larga
+121=hechizo de rayo
+122=daga
+123=arco largo
+124=garras
+130=Nombre: {0}
+131=Raza: {0}
+132=Ocupación: {0}
+133=Fuerza: {0}
+134=Agilidad: {0}
+135=Puntos de salud: {0}
+136=Arma: {0}
+137=Daño máximo del arma: {0}
+140=¡Ja! ¡Demasiado lento, lagartija gigante!
+141=¡Tendrás que hacerlo mejor, escamoso!
+142=¡Fallaste! Quizás la próxima vez deberías apuntar.
+143=¿Eso es un dragón o una gallina muy grande?
+
+# ---------- 200 - 249: Adventure story (PBI Story) ----------
+200=Caminas por las montañas. Ves dos caminos: uno lleva al norte, más arriba en las montañas. El otro lleva al sur, hacia el bosque. ¿Cuál tomas? Escribe 'n' para Norte. Escribe 's' para Sur. Escribe 'e' para salir del juego.
+201=Tomas el camino del Sur. Después de muchos días largos, no ocurre nada emocionante. Aburrido, regresas a casa, pobre y todavía aburrido.
+202=Tomas el camino del Norte. Después de caminar durante horas, el aire se vuelve más frío y los árboles más escasos. Te enfrentas a un dragón. El dragón tiene un tesoro de oro detrás de él.
+203=El dragón dice: 'Soy {0}. ¡Vete o perece!'
+204=Tu anillo mágico te muestra las estadísticas del dragón.
+205=¿Deseas retirarte o atacar? Escribe 'r' para retirarte. Escribe 'a' para atacar.
+
+# ---------- 250 - 299: Dragon (PBI Dragon) ----------
+250=¡Fallaste, aliento de mosquito!
+251=¿Eso es todo lo que tienes? ¡He visto gatitos con más fuego en las patas!
+252=¡Esfuérzate más, {0}! ¡Me estás dando sueño!
+253=¡Quizás si entrecerraras más los ojos, le darías a algo!
+254=¡Ay! ¡Eso sí dolió un poco!
+255=¡Impresionante! Quizás valga la pena tostarte...
+256=Eso... fue inesperado. Pero te aseguro que no volverá a pasar.
+257=¡Vaya, vaya! ¡Muerdes más de lo que pensaba!
+260=Qué adorable. De verdad intentas ganar.
+261=¿Sigues en pie? Tu persistencia es casi tan molesta como tu espada.
+262=¿Todavía respiras? Sí que eres terco, ¿verdad?
+263=Estoy realmente impresionado. La mayoría tiene el sentido común de morir mucho más rápido.
+
+# ---------- 300 - 399: Combat (PBI Combat) ----------
+300=Te preparas para atacar al dragón con tu arma. Como {0}, sacas tu {1}. Atacas.
+301=Golpeas a {0}.
+302=No le diste a {0}.
+303={0} se defiende de tu ataque con éxito.
+304=El dragón no logró defenderse de tu ataque. Tu arma causa {0} puntos de daño. Los puntos de salud del dragón ahora son {1}.
+305=Con las últimas palabras de '¡Arggg!', has derrotado al dragón.
+306=Turno del dragón para atacar.
+307={0} te golpea.
+308=El dragón no te alcanzó.
+309=Te defiendes del ataque con éxito.
+310=El ataque del dragón causa {0} puntos de daño. Tus puntos de salud ahora son {1}.
+311=Con las últimas palabras de '¡Oh, no!', has sido derrotado por el dragón.
+312=Escribe 'r' para retirarte. Escribe 'a' para atacar.
+313=Te retiras apresuradamente, lamiéndote las heridas.
+
+# ---------- 400 - 449: End game ----------
+400=Te retiras rápidamente. Llegas a casa pobre pero vivo para vivir otra aventura. Fin.
+401=Con el dragón vencido, recoges el tesoro de oro y regresas a casa, rico y famoso. Fin.
+402=El dragón se ríe mientras tu vista se apaga. Has sido derrotado. Tu familia llora tu pérdida. Fin.

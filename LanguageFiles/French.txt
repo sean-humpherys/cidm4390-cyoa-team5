@@ -1,0 +1,95 @@
+# ============================================================================
+# French message catalog (Français)
+# Same format and ID ranges as English.txt - see the header there.
+# Every id must match English.txt exactly.
+# ============================================================================
+
+# ---------- 1 - 99: Menu, language picker, settings (PBI Menu) ----------
+1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
+2=Choix invalide. Veuillez réessayer.
+3=Bienvenue dans le jeu Choisissez votre aventure
+4=Choisissez : 1. Créer un personnage. 2. Quitter. 3. Paramètres. Tapez '1', '2' ou '3'.
+5=L'aventure se termine. Au revoir.
+6=Cette partie de l'aventure est encore en construction. Retour au menu principal.
+10=Paramètres : 1. Changer de langue. 2. Changer la couleur du texte. 3. Retour au menu principal. Tapez '1', '2' ou '3'.
+11=Langue changée en français.
+12=Choisissez une couleur de texte : 1. Vert. 2. Blanc. 3. Cyan. 4. Jaune. Tapez '1', '2', '3' ou '4'.
+13=Couleur du texte changée.
+
+# ---------- 100 - 199: Character creation (PBI Class Creation) ----------
+100=De quelle race voulez-vous que soit votre personnage ? Humain, Elfe, Nain ou Halfelin ?
+101=Quel est le nom de votre personnage ?
+102=Quel est le métier de votre personnage ? Guerrier, magicien, voleur ou archer ?
+103=Maintenant, nous allons lancer le dé pour la force. Tapez 'roll'
+104=Maintenant, nous allons lancer le dé pour l'agilité. Tapez 'roll'
+105=Maintenant, nous allons lancer le dé pour les points de vie. Tapez 'roll'
+106=Veuillez taper 'roll'.
+107=Que voulez-vous faire maintenant ? 1. Afficher les statistiques du personnage. 2. Partir à l'aventure. Tapez 1 ou 2.
+110=Humain
+111=Elfe
+112=Nain
+113=Halfelin
+114=Guerrier
+115=Magicien
+116=Voleur
+117=Archer
+120=épée longue
+121=sort d'éclair
+122=dague
+123=arc long
+124=griffes
+130=Nom : {0}
+131=Race : {0}
+132=Métier : {0}
+133=Force : {0}
+134=Agilité : {0}
+135=Points de vie : {0}
+136=Arme : {0}
+137=Dégâts maximum de l'arme : {0}
+140=Ha ! Trop lent, gros lézard !
+141=Il faudra faire mieux que ça, l'écailleux !
+142=Raté ! La prochaine fois, essaie de viser.
+143=C'est un dragon ou une très grosse poule ?
+
+# ---------- 200 - 249: Adventure story (PBI Story) ----------
+200=Vous marchez dans les montagnes. Vous voyez deux chemins : l'un mène au nord, plus haut dans les montagnes. L'autre mène au sud, vers la forêt. Lequel prenez-vous ? Tapez 'n' pour Nord. Tapez 's' pour Sud. Tapez 'e' pour quitter le jeu.
+201=Vous prenez le chemin du Sud. Après de longues journées, rien d'aventureux ne se produit. Vous vous ennuyez et rentrez chez vous, pauvre et toujours ennuyé.
+202=Vous prenez le chemin du Nord. Après des heures de marche, l'air se refroidit et les arbres se font plus rares. Vous vous retrouvez face à un dragon. Le dragon garde un trésor d'or derrière lui.
+203=Le dragon dit : 'Je suis {0}. Partez ou périssez !'
+204=Votre anneau magique vous révèle les statistiques du dragon.
+205=Voulez-vous battre en retraite ou attaquer ? Tapez 'r' pour battre en retraite. Tapez 'a' pour attaquer.
+
+# ---------- 250 - 299: Dragon (PBI Dragon) ----------
+250=Raté, souffle de moucheron !
+251=C'est tout ce que tu as ? J'ai vu des chatons avec plus de feu dans les pattes !
+252=Essaie encore, {0} ! Tu me fais bâiller !
+253=Peut-être qu'en plissant les yeux, tu toucherais enfin quelque chose !
+254=Aïe ! Ça m'a un peu piqué !
+255=Impressionnant ! Tu vaux peut-être la peine d'être grillé...
+256=C'était... inattendu. Mais je t'assure que ça ne se reproduira pas.
+257=Eh bien ! Tu as plus de mordant que je ne le pensais !
+260=Comme c'est mignon. Tu essaies vraiment de gagner.
+261=Encore debout ? Ta persévérance est presque aussi agaçante que ton épée.
+262=Tu respires encore ? Tu es vraiment têtu, n'est-ce pas ?
+263=Je suis sincèrement impressionné. La plupart ont le bon sens de mourir bien plus vite que ça.
+
+# ---------- 300 - 399: Combat (PBI Combat) ----------
+300=Vous vous préparez à attaquer le dragon avec votre arme. En tant que {0}, vous dégainez votre {1}. Vous attaquez.
+301=Vous touchez {0}.
+302=Vous ratez {0}.
+303={0} pare votre attaque avec succès.
+304=Le dragon n'a pas réussi à parer votre attaque. Votre arme inflige {0} points de dégâts. Les points de vie du dragon sont maintenant de {1}.
+305=Avec un dernier 'Arggg !', vous avez vaincu le dragon.
+306=Au tour du dragon d'attaquer.
+307={0} vous frappe.
+308=Le dragon vous a raté.
+309=Vous parez l'attaque avec succès.
+310=L'attaque du dragon inflige {0} points de dégâts. Vos points de vie sont maintenant de {1}.
+311=Avec un dernier 'Oh non !', vous avez été vaincu par le dragon.
+312=Tapez 'r' pour battre en retraite. Tapez 'a' pour attaquer.
+313=Vous battez en retraite à la hâte en pansant vos blessures.
+
+# ---------- 400 - 449: End game ----------
+400=Vous battez rapidement en retraite. Vous rentrez chez vous pauvre mais vivant, prêt pour une autre aventure. Fin.
+401=Le dragon vaincu, vous récupérez le trésor d'or et rentrez chez vous, riche et célèbre. Fin.
+402=Le dragon rit tandis que votre vue s'éteint. Vous êtes vaincu. Votre famille pleure votre perte. Fin.
