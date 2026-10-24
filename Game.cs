@@ -21,7 +21,7 @@ public class Game
     private readonly Messages messages;
 
     // TODO PBI Dragon (Ryan): Class Diagram says Game "Creates" Dragon at startup.
-    // private Dragon dragon;
+    private readonly Dragon dragon;
 
     // TODO PBI Class Creation (Jonathan): Class Diagram says Game "Creates" Player.
     // private Player? player;
@@ -37,7 +37,7 @@ public class Game
         // TODO PBI Dragon (Ryan): create the dragon here, before the menu shows.
         // Sequence Diagram: new Dragon(name) rolls strength, agility and health with die.Roll(20)
         // and gets new Weapon("claws", 12, "##").
-        // dragon = new Dragon("<dragon name>");
+        dragon = new Dragon("Fire Dragon", die);
 
         messages = new Messages();
     }
