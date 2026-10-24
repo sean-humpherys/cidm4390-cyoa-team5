@@ -1,0 +1,119 @@
+# ============================================================================
+# English message catalog
+# Format:  <id>=<text>
+#   - Lines starting with # are comments; blank lines are ignored.
+#   - Only the FIRST '=' splits id from text, so text may contain '='.
+#   - Write \n for a line break inside a message.
+#   - {0}, {1} ... are placeholders filled in by Messages.GetMessage(id, args).
+#
+# RULE: every id here must also exist in Spanish.txt and French.txt.
+#       The MessagesTests unit test fails if the three files get out of sync.
+#
+# ID ranges (one range per PBI so teammates don't edit the same lines):
+#     1 -  99  Menu, language picker, settings        (PBI Menu - John)
+#   100 - 199  Character creation / Player            (PBI Class Creation - Jonathan)
+#   200 - 249  Adventure story / dialogue             (PBI Story - John)
+#   250 - 299  Dragon                                 (PBI Dragon - Ryan)
+#   300 - 399  Combat                                 (PBI Combat - Sina)
+#   400 - 449  End game
+# ============================================================================
+
+# ---------- 1 - 99: Menu, language picker, settings (PBI Menu) ----------
+1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
+2=Invalid choice. Please try again.
+3=Welcome to Choose Your Adventure Game
+4=Choose: 1. Create Character. 2. Exit. 3. Settings. Type '1', '2' or '3'.
+5=Adventure ends. Bye.
+6=This part of the adventure is still being built. Returning to the main menu.
+10=Settings: 1. Change language. 2. Change text color. 3. Return to main menu. Type '1', '2' or '3'.
+11=Language changed to English.
+12=Choose a text color: 1. Green. 2. White. 3. Cyan. 4. Yellow. Type '1', '2', '3' or '4'.
+13=Text color changed.
+# 90 - 99 reserved for the optional Save/Load feature.
+
+# ---------- 100 - 199: Character creation (PBI Class Creation) ----------
+100=What race of character do you want to be? Human, Elf, Dwarf or Halfling?
+101=What is the name of your character?
+102=What is the occupation of your character? Fighter, magician, thief, or archer?
+103=Next, we are going to roll for strength. Type 'roll'
+104=Next, we will roll for agility. Type 'roll'
+105=Next, we will roll for health points. Type 'roll'
+106=Please type 'roll'.
+107=What would you like to do next? 1. List character stats. 2. Proceed on an adventure. Type 1 or 2.
+# Display names for the Race enum
+110=Human
+111=Elf
+112=Dwarf
+113=Halfling
+# Display names for the Occupation enum
+114=Fighter
+115=Magician
+116=Thief
+117=Archer
+# Weapon names (Fighter, Magician, Thief, Archer, Dragon)
+120=long sword
+121=lightning bolt spell
+122=dagger
+123=long bow
+124=claws
+# Stat labels for DisplayStats() (Player and Dragon can both use these)
+130=Name: {0}
+131=Race: {0}
+132=Occupation: {0}
+133=Strength: {0}
+134=Agility: {0}
+135=Health points: {0}
+136=Weapon: {0}
+137=Weapon maximum damage: {0}
+# Player taunts (Player.MissedMeTaunt) - stakeholder only said "g-rated"; team can change these.
+140=Ha! Too slow, you overgrown lizard!
+141=You'll have to do better than that, scaly!
+142=Missed me! Maybe try aiming next time.
+143=Is that a dragon or a very large chicken?
+
+# ---------- 200 - 249: Adventure story (PBI Story) ----------
+200=You are walking in the mountains. You see two paths, one leading north and higher into the mountains. The other path leads south and into the woods. Which do you take? Enter 'n' for North. Enter 's' for South. Enter 'e' for exit game.
+201=You take the South path. After many long days, nothing adventurous happens. You are bored and return home, poor, and still bored.
+202=You take the North path. After walking for hours, the air grows colder, and the trees become more sparse. You are confronted with a dragon. The dragon has a hoard of gold behind it.
+203=The dragon says 'I am {0}. Leave or perish!'
+204=Your magic ring gives you the stats on the dragon.
+205=Do you wish to retreat or attack? Enter 'r' for retreat. Enter 'a' for attack.
+
+# ---------- 250 - 299: Dragon (PBI Dragon) ----------
+# Dragon.MissedMeTaunt() - when the dragon defends. {0} = player's race
+250=Missed me, breath of a gnat!
+251=Is that all you've got? I've seen kittens with more fire in their paws!
+252=Try harder, {0}! You're making me yawn!
+253=Maybe if you squinted harder, you'd actually hit something!
+# Dragon.WasHitTaunt() - when the dragon is hit but still alive
+254=Ow! That actually stung a bit!
+255=Impressive! You might actually be worth toasting...
+256=That... was unexpected. But I assure you, it won't happen again.
+257=Well, I'll be! You have more bite than I thought!
+# Dragon's sarcastic reply after hitting the player (player still alive)
+260=How adorable. You're actually trying to win.
+261=You're still standing? Your persistence is almost as annoying as your sword.
+262=Still breathing? You really are a stubborn, aren't you?
+263=I'm genuinely impressed. Most people have the common sense to die much faster than this.
+
+# ---------- 300 - 399: Combat (PBI Combat) ----------
+# {0} = occupation, {1} = weapon
+300=You prepare yourself to attack the dragon with your weapon. As a {0} you withdraw your {1}. You attack.
+301=You hit {0}.
+302=You missed {0}.
+303={0} successfully defends your attack.
+304=The dragon failed to defend your attack. Your weapon delivers {0} damage points. The dragon's health points is now {1}.
+305=With the last words of 'Arggg!', you have defeated the dragon.
+306=Dragon's turn to attack.
+307={0} hits you.
+308=The dragon missed you.
+309=You successfully defend the attack.
+310=The dragon's attack delivers {0} damage points. Your health points is now {1}.
+311=With the last words of 'Oh no!', you have been defeated by the dragon.
+312=Enter 'r' for retreat. Enter 'a' for attack.
+313=You hastily retreat licking your wounds.
+
+# ---------- 400 - 449: End game ----------
+400=You quickly retreat. You come home poor but alive to adventure another day. The End.
+401=With the dragon vanquished, you collect the hoard of gold, return home, rich and famous. The End.
+402=The dragon laughs as your eyesight fades. You are defeated. Your family mourns their loss. The End.
