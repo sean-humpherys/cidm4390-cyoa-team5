@@ -23,8 +23,8 @@ public class Game
     // TODO PBI Dragon (Ryan): Class Diagram says Game "Creates" Dragon at startup.
     private readonly Dragon dragon;
 
-    // TODO PBI Class Creation (Jonathan): Class Diagram says Game "Creates" Player.
-    // private Player? player;
+    // DONE PBI Class Creation (Jonathan): Class Diagram says Game "Creates" Player.
+    private Player? player;
 
     // Settings: the normal text color. Stakeholder (Appendix B) wants green by default.
     public ConsoleColor TextColor { get; private set; } = ConsoleColor.Green;
@@ -246,11 +246,147 @@ public class Game
     //   5. Health: show 105, wait for "roll", die.Roll(20) + the strength modifier from step 3.
     //         Open question: the diagram skips the modifier for Halflings, but the dialog says to add it.
     //   6. Loop on 107: "1" -> Console.WriteLine(player.DisplayStats()); "2" -> return true.
-    private bool CreateCharacter()
+    
+private bool CreateCharacter()
+{
+    // Select race
+    Race race;
+
+    while (true)
     {
-        Console.WriteLine(messages.GetMessage(6)); // "still being built" - delete when implemented
-        return false;
+        Console.WriteLine(messages.GetMessage(100));
+
+        string? choice = ReadInput();
+
+        if (choice == null)
+            return false;
+
+        switch (choice)
+        {
+            case "1":
+                race = Race.Human;
+                break;
+            case "2":
+                race = Race.Elf;
+                break;
+            case "3":
+                race = Race.Dwarf;
+                break;
+            case "4":
+                race = Race.Halfling;
+                break;
+            default:
+                Console.WriteLine(messages.GetMessage(2));
+                continue;
+        }
+
+        break;
     }
+
+    // Enter player name
+    string name;
+
+    while (true)
+    {
+        Console.WriteLine(messages.GetMessage(101));
+
+        string? input = ReadInput();
+
+        if (input == null)
+            return false;
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            Console.WriteLine(messages.GetMessage(2));
+            continue;
+        }
+
+        name = input;
+        break;
+    }
+
+    // Select occupation
+    Occupation occupation;
+
+    while (true)
+    {
+        Console.WriteLine(messages.GetMessage(102));
+
+        string? choice = ReadInput();
+
+        if (choice == null)
+            return false;
+
+        switch (choice)
+        {
+            case "1":
+                occupation = Occupation.Fighter;
+                break;
+            case "2":
+                occupation = Occupation.Magician;
+                break;
+            case "3":
+                occupation = Occupation.Thief;
+                break;
+            case "4":
+                occupation = Occupation.Archer;
+                break;
+            default:
+                Console.WriteLine(messages.GetMessage(2));
+                continue;
+        }
+
+        break;
+    }
+
+    // Create the player using the existing Player class
+    player = new Player(name, race, occupation, die);
+
+        // Roll Strength
+        if (!WaitForRoll(103))
+            return false;
+
+        player.RollStrength(die);
+
+        // Roll Agility
+        if (!WaitForRoll(104))
+            return false;
+
+        player.RollAgility(die);
+
+        // Roll Health
+        if (!WaitForRoll(105))
+            return false;
+
+        player.RollHealth(die);
+
+
+    // Display character statistics or continue
+    while (true)
+    {
+        Console.WriteLine(messages.GetMessage(107));
+
+        string? choice = ReadInput();
+
+        switch (choice)
+        {
+            case "1":
+                player.DisplayStats();
+                break;
+
+            case "2":
+                return true;
+
+            case null:
+                return false;
+
+            default:
+                Console.WriteLine(messages.GetMessage(2));
+                break;
+        }
+    }
+}
+
 
     // ------------------------------------------------------------------------
     // TODO PBI Story (John) + PBI Dragon (Ryan): rest of Start Game Activity Diagram
@@ -299,6 +435,24 @@ public class Game
 
     // Reads one line of player input: trimmed and lower-case, so "N", " n " and "n" all match "n".
     // Returns null when input has ended. Treat that as "quit" so the game never loops forever.
+    private bool WaitForRoll(int messageId)
+{
+    while (true)
+    {
+        Console.WriteLine(messages.GetMessage(messageId));
+
+        string? input = ReadInput();
+
+        if (input == null)
+            return false;
+
+        if (input == "roll")
+            return true;
+
+        Console.WriteLine(messages.GetMessage(2));
+    }
+}
+    
     private static string? ReadInput()
     {
         return Console.ReadLine()?.Trim().ToLowerInvariant();
