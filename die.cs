@@ -2,7 +2,7 @@ public class Die
 {
     private readonly Random _random = new Random();
 
-    public int Roll(int sides = 20)
+    public virtual int Roll(int sides = 20)
     {
         if (sides < 1)
         {
@@ -12,4 +12,4 @@ public class Die
 
         return _random.Next(1, sides + 1);
     }
-}
+}

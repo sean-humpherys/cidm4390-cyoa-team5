@@ -8,23 +8,25 @@
 1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
 2=Opción no válida. Inténtelo de nuevo.
 3=Bienvenido al juego Elige tu propia aventura
-4=Elija: 1. Crear personaje. 2. Salir. 3. Configuración. Escriba '1', '2' o '3'.
+4=Elija:\n  1. Crear personaje\n  2. Salir\n  3. Configuración\nEscriba '1', '2' o '3'.
 5=La aventura termina. Adiós.
 6=Esta parte de la aventura todavía está en construcción. Volviendo al menú principal.
-10=Configuración: 1. Cambiar idioma. 2. Cambiar color del texto. 3. Volver al menú principal. Escriba '1', '2' o '3'.
+10=Configuración:\n  1. Cambiar idioma\n  2. Cambiar color del texto\n  3. Volver al menú principal\nEscriba '1', '2' o '3'.
 11=Idioma cambiado a español.
-12=Elija un color de texto: 1. Verde. 2. Blanco. 3. Cian. 4. Amarillo. Escriba '1', '2', '3' o '4'.
+12=Elija un color de texto:\n  1. Verde\n  2. Blanco\n  3. Cian\n  4. Amarillo\nEscriba '1', '2', '3' o '4'.
 13=Color del texto cambiado.
 
 # ---------- 100 - 199: Character creation (PBI Class Creation) ----------
-100=¿De qué raza quieres que sea tu personaje? ¿Humano, Elfo, Enano o Mediano?
+100=¿De qué raza quieres que sea tu personaje?\n  1. Humano\n  2. Elfo\n  3. Enano\n  4. Mediano\nEscribe 1, 2, 3 o 4.
 101=¿Cuál es el nombre de tu personaje?
-102=¿Cuál es la ocupación de tu personaje? ¿Guerrero, mago, ladrón o arquero?
+102=¿Cuál es la ocupación de tu personaje?\n  1. Guerrero\n  2. Mago\n  3. Ladrón\n  4. Arquero\nEscribe 1, 2, 3 o 4.
 103=Ahora vamos a tirar el dado para la fuerza. Escribe 'roll'
 104=Ahora tiraremos el dado para la agilidad. Escribe 'roll'
 105=Ahora tiraremos el dado para los puntos de salud. Escribe 'roll'
 106=Por favor, escribe 'roll'.
-107=¿Qué te gustaría hacer ahora? 1. Ver las estadísticas del personaje. 2. Comenzar una aventura. Escribe 1 o 2.
+107=¿Qué te gustaría hacer ahora?\n  1. Ver las estadísticas del personaje.\n  2. Comenzar una aventura.\nEscribe 1 o 2.
+108=Sacaste un {0} en el dado de 20 caras.
+109=Modificador racial ({0}): {1}
 110=Humano
 111=Elfo
 112=Enano
@@ -33,6 +35,8 @@
 115=Mago
 116=Ladrón
 117=Arquero
+118=Sin modificador racial.
+119=Tus estadísticas hasta ahora:
 120=espada larga
 121=hechizo de rayo
 122=daga
@@ -52,12 +56,12 @@
 143=¿Eso es un dragón o una gallina muy grande?
 
 # ---------- 200 - 249: Adventure story (PBI Story) ----------
-200=Caminas por las montañas. Ves dos caminos: uno lleva al norte, más arriba en las montañas. El otro lleva al sur, hacia el bosque. ¿Cuál tomas? Escribe 'n' para Norte. Escribe 's' para Sur. Escribe 'e' para salir del juego.
+200=Caminas por las montañas. Ves dos caminos: uno lleva al norte, más arriba en las montañas. El otro lleva al sur, hacia el bosque. ¿Cuál tomas?\n  Escribe 'n' para Norte.\n  Escribe 's' para Sur.\n  Escribe 'e' para salir del juego.
 201=Tomas el camino del Sur. Después de muchos días largos, no ocurre nada emocionante. Aburrido, regresas a casa, pobre y todavía aburrido.
 202=Tomas el camino del Norte. Después de caminar durante horas, el aire se vuelve más frío y los árboles más escasos. Te enfrentas a un dragón. El dragón tiene un tesoro de oro detrás de él.
 203=El dragón dice: 'Soy {0}. ¡Vete o perece!'
 204=Tu anillo mágico te muestra las estadísticas del dragón.
-205=¿Deseas retirarte o atacar? Escribe 'r' para retirarte. Escribe 'a' para atacar.
+205=¿Deseas retirarte o atacar?\n  Escribe 'r' para retirarte.\n  Escribe 'a' para atacar.
 
 # ---------- 250 - 299: Dragon (PBI Dragon) ----------
 250=¡Fallaste, aliento de mosquito!
@@ -86,7 +90,7 @@
 309=Te defiendes del ataque con éxito.
 310=El ataque del dragón causa {0} puntos de daño. Tus puntos de salud ahora son {1}.
 311=Con las últimas palabras de '¡Oh, no!', has sido derrotado por el dragón.
-312=Escribe 'r' para retirarte. Escribe 'a' para atacar.
+312=  Escribe 'r' para retirarte.\n  Escribe 'a' para atacar.
 313=Te retiras apresuradamente, lamiéndote las heridas.
 
 # ---------- 400 - 449: End game ----------

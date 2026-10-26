@@ -84,12 +84,12 @@ public sealed class MainMenuTests
     }
 
     [TestMethod]
-    public void CreateCharacter_NotBuiltYet_ReturnsToMainMenu()
+    public void CreateCharacter_StartsWithTheRaceQuestion()
     {
-        // Update this test when the Class Creation PBI replaces the placeholder.
-        string output = Play(new Game(), "1", "1", "2");
+        // English, Create Character, then input ends before a race is chosen.
+        string output = Play(new Game(), "1", "1");
 
-        Assert.Contains("still being built", output);
+        Assert.Contains("What race of character do you want to be?", output);
         Assert.Contains("Adventure ends. Bye.", output);
     }
 

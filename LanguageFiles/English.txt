@@ -22,24 +22,26 @@
 1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
 2=Invalid choice. Please try again.
 3=Welcome to Choose Your Adventure Game
-4=Choose: 1. Create Character. 2. Exit. 3. Settings. Type '1', '2' or '3'.
+4=Choose:\n  1. Create Character\n  2. Exit\n  3. Settings\nType '1', '2' or '3'.
 5=Adventure ends. Bye.
 6=This part of the adventure is still being built. Returning to the main menu.
-10=Settings: 1. Change language. 2. Change text color. 3. Return to main menu. Type '1', '2' or '3'.
+10=Settings:\n  1. Change language\n  2. Change text color\n  3. Return to main menu\nType '1', '2' or '3'.
 11=Language changed to English.
-12=Choose a text color: 1. Green. 2. White. 3. Cyan. 4. Yellow. Type '1', '2', '3' or '4'.
+12=Choose a text color:\n  1. Green\n  2. White\n  3. Cyan\n  4. Yellow\nType '1', '2', '3' or '4'.
 13=Text color changed.
 # 90 - 99 reserved for the optional Save/Load feature.
 
 # ---------- 100 - 199: Character creation (PBI Class Creation) ----------
-100=What race of character do you want to be? Human, Elf, Dwarf or Halfling?
+100=What race of character do you want to be?\n  1. Human\n  2. Elf\n  3. Dwarf\n  4. Halfling\nType 1, 2, 3 or 4.
 101=What is the name of your character?
-102=What is the occupation of your character? Fighter, magician, thief, or archer?
+102=What is the occupation of your character?\n  1. Fighter\n  2. Magician\n  3. Thief\n  4. Archer\nType 1, 2, 3 or 4.
 103=Next, we are going to roll for strength. Type 'roll'
 104=Next, we will roll for agility. Type 'roll'
 105=Next, we will roll for health points. Type 'roll'
 106=Please type 'roll'.
-107=What would you like to do next? 1. List character stats. 2. Proceed on an adventure. Type 1 or 2.
+107=What would you like to do next?\n  1. List character stats.\n  2. Proceed on an adventure.\nType 1 or 2.
+108=You rolled a {0} on the 20-sided die.
+109={0} racial modifier: {1}
 # Display names for the Race enum
 110=Human
 111=Elf
@@ -50,6 +52,8 @@
 115=Magician
 116=Thief
 117=Archer
+118=No racial modifier.
+119=Your stats so far:
 # Weapon names (Fighter, Magician, Thief, Archer, Dragon)
 120=long sword
 121=lightning bolt spell
@@ -72,12 +76,12 @@
 143=Is that a dragon or a very large chicken?
 
 # ---------- 200 - 249: Adventure story (PBI Story) ----------
-200=You are walking in the mountains. You see two paths, one leading north and higher into the mountains. The other path leads south and into the woods. Which do you take? Enter 'n' for North. Enter 's' for South. Enter 'e' for exit game.
+200=You are walking in the mountains. You see two paths, one leading north and higher into the mountains. The other path leads south and into the woods. Which do you take?\n  Enter 'n' for North.\n  Enter 's' for South.\n  Enter 'e' for exit game.
 201=You take the South path. After many long days, nothing adventurous happens. You are bored and return home, poor, and still bored.
 202=You take the North path. After walking for hours, the air grows colder, and the trees become more sparse. You are confronted with a dragon. The dragon has a hoard of gold behind it.
 203=The dragon says 'I am {0}. Leave or perish!'
 204=Your magic ring gives you the stats on the dragon.
-205=Do you wish to retreat or attack? Enter 'r' for retreat. Enter 'a' for attack.
+205=Do you wish to retreat or attack?\n  Enter 'r' for retreat.\n  Enter 'a' for attack.
 
 # ---------- 250 - 299: Dragon (PBI Dragon) ----------
 # Dragon.MissedMeTaunt() - when the dragon defends. {0} = player's race
@@ -110,7 +114,7 @@
 309=You successfully defend the attack.
 310=The dragon's attack delivers {0} damage points. Your health points is now {1}.
 311=With the last words of 'Oh no!', you have been defeated by the dragon.
-312=Enter 'r' for retreat. Enter 'a' for attack.
+312=  Enter 'r' for retreat.\n  Enter 'a' for attack.
 313=You hastily retreat licking your wounds.
 
 # ---------- 400 - 449: End game ----------
