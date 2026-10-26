@@ -95,6 +95,24 @@ public class Messages
         return string.Format(GetMessage(whichMessage), args);
     }
 
+    // Translated display names for the Race and Occupation enums (Player.cs).
+    // They rely on the enum order matching the message ids: 110-113, 114-117, 120-123.
+    public string GetRaceName(Race race)
+    {
+        return GetMessage(110 + (int)race);
+    }
+
+    public string GetOccupationName(Occupation occupation)
+    {
+        return GetMessage(114 + (int)occupation);
+    }
+
+    // Name of the starting weapon for an occupation ("long sword", "dagger", ...)
+    public string GetWeaponName(Occupation occupation)
+    {
+        return GetMessage(120 + (int)occupation);
+    }
+
     // All message ids currently loaded (used by the unit tests to keep translations in sync).
     public IReadOnlyCollection<int> GetMessageIds()
     {

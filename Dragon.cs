@@ -7,6 +7,9 @@ public class Dragon
     private int _agility;
     private int _armorClass;
 
+    // Used to pick random taunts
+    private readonly Die _die;
+
     // Dragon attributes
     public string Name { get; set; }
 
@@ -50,6 +53,7 @@ public class Dragon
         ArgumentNullException.ThrowIfNull(die);
 
         Name = name;
+        _die = die;
 
         // Roll dragon attributes using the existing Die
         Strength = die.Roll(20);
@@ -94,27 +98,39 @@ public class Dragon
         return Health > 0;
     }
 
-    // Taunt when player misses
-    public string MissedMeTaunt()
+    // Taunt when the dragon defends the player's attack (messages 250-253).
+    // playerRace fills in "Try harder, {race}!"
+    public string MissedMeTaunt(Messages? messages = null, string playerRace = "")
     {
-        return $"{Name} laughs as your attack misses!";
+        messages ??= new Messages();
+        return messages.GetMessage(250 + _die.Roll(4) - 1, playerRace);
     }
 
-    // Taunt when dragon is hit
-    public string WasHitTaunt()
+    // Taunt when the dragon is hit but still alive (messages 254-257)
+    public string WasHitTaunt(Messages? messages = null)
     {
-        return $"{Name} roars in pain!";
+        messages ??= new Messages();
+        return messages.GetMessage(254 + _die.Roll(4) - 1);
     }
 
-    // Display dragon statistics
-    public string DisplayStats()
+    // Sarcastic reply after the dragon hurts the player (messages 260-263)
+    public string HitPlayerTaunt(Messages? messages = null)
     {
-        return $"Dragon: {Name}\n" +
-               $"Health: {Health}\n" +
-               $"Strength: {Strength}\n" +
-               $"Agility: {Agility}\n" +
-               $"Armor Class: {ArmorClass}\n" +
-               $"Weapon: {DragonWeapon.Name}";
+        messages ??= new Messages();
+        return messages.GetMessage(260 + _die.Roll(4) - 1);
+    }
+
+    // Display dragon statistics in the chosen language (labels are messages 130-137)
+    public string DisplayStats(Messages? messages = null)
+    {
+        messages ??= new Messages();
+
+        return string.Join(Environment.NewLine,
+            messages.GetMessage(130, Name),
+            messages.GetMessage(133, Strength),
+            messages.GetMessage(134, Agility),
+            messages.GetMessage(135, Health),
+            messages.GetMessage(136, messages.GetMessage(124)), // claws
+            messages.GetMessage(137, DragonWeapon.Damage));
     }
 }
-

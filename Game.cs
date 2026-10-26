@@ -3,14 +3,15 @@ using System.Text;
 // Game (Class Diagram: class Game)
 // Runs the whole game: language picker -> main menu -> character creation -> adventure -> combat -> end.
 //
-// STATUS
-//   DONE  (PBI Menu - John):  language picker, main menu, settings (language + text color), exit.
-//   TODO  (other PBIs):       look for "TODO PBI" below. Each stub says which diagram to follow
-//                              and which message ids in LanguageFiles/*.txt are already written for it.
+//   PBI Menu (John):             language picker, main menu, settings, exit
+//   PBI Class Creation (Jonathan): CreateCharacter()
+//   PBI Story (John):            StartAdventure(), MeetTheDragon(), StartCombat(), EndGame()
+//   PBI Dragon (Ryan) / Combat (Sina): Dragon.cs, CombatSystem.cs
 //
 // TEAM RULES FOR THIS FILE
 //   - Get every player-facing string from messages.GetMessage(id). Never hard-code text.
 //   - Read player input with ReadInput(). It trims and lower-cases, and returns null if input ends.
+//     On a real console it also clears the screen and shows the choice at the top ("> n").
 //   - After printing something in another color (e.g. the red dragon line), restore TextColor.
 public class Game
 {
@@ -20,23 +21,26 @@ public class Game
     // Class Diagram: Game "Displays" Messages.
     private readonly Messages messages;
 
-    // TODO PBI Dragon (Ryan): Class Diagram says Game "Creates" Dragon at startup.
+    // Class Diagram: Game "Creates" Dragon at startup.
     private readonly Dragon dragon;
 
-    // DONE PBI Class Creation (Jonathan): Class Diagram says Game "Creates" Player.
+    // Class Diagram: Game "Creates" Player (during character creation).
     private Player? player;
 
     // Settings: the normal text color. Stakeholder (Appendix B) wants green by default.
     public ConsoleColor TextColor { get; private set; } = ConsoleColor.Green;
 
-    public Game()
+    public Game() : this(new Die())
     {
-        // Start Game Activity Diagram: "Instantiate Die object", then "Instantiate Dragon object".
-        die = new Die();
+    }
 
-        // TODO PBI Dragon (Ryan): create the dragon here, before the menu shows.
-        // Sequence Diagram: new Dragon(name) rolls strength, agility and health with die.Roll(20)
-        // and gets new Weapon("claws", 12, "##").
+    // Lets the unit tests pass in a Die with known rolls.
+    public Game(Die die)
+    {
+        ArgumentNullException.ThrowIfNull(die);
+
+        // Start Game Activity Diagram: "Instantiate Die object", then "Instantiate Dragon object".
+        this.die = die;
         dragon = new Dragon("Fire Dragon", die);
 
         messages = new Messages();
@@ -55,6 +59,7 @@ public class Game
         }
 
         ApplyTextColor();
+        ClearScreen();
         ChooseLanguage();
         Console.WriteLine(messages.GetMessage(3)); // Welcome to Choose Your Adventure Game
         ShowMainMenu();
@@ -62,16 +67,18 @@ public class Game
     }
 
     // Class Diagram: + void EndGame()
-    // TODO PBI Combat / Story: End Game Activity Diagram has three endings.
-    // EndGame needs to know which one happened. Suggested approach: add an enum and a parameter,
-    // e.g. EndGame(EndCondition condition) with Retreat, DragonDefeated, PlayerDefeated, then:
-    //     Retreat         -> Console.WriteLine(messages.GetMessage(400));
-    //     DragonDefeated  -> Console.WriteLine(messages.GetMessage(401));
-    //     PlayerDefeated  -> Console.WriteLine(messages.GetMessage(402));
-    // Note: 'e' on the adventure menu also points to End Game, but none of the three messages fits.
-    // Ask the professor (stakeholder) what to show there; until then, message 5 ("Adventure ends. Bye.") works.
-    public void EndGame()
+    // End Game Activity Diagram: one message for each way the game can end.
+    public void EndGame(EndCondition condition)
     {
+        int messageId = condition switch
+        {
+            EndCondition.Retreat => 400,        // You quickly retreat... The End.
+            EndCondition.DragonDefeated => 401, // With the dragon vanquished... The End.
+            EndCondition.PlayerDefeated => 402, // The dragon laughs as your eyesight fades... The End.
+            _ => 5                              // Adventure ends. Bye.
+        };
+
+        Console.WriteLine(messages.GetMessage(messageId));
     }
 
     // ------------------------------------------------------------------------
@@ -197,6 +204,11 @@ public class Game
             Console.WriteLine(messages.GetMessage(12)); // 1. Green 2. White 3. Cyan 4. Yellow
             string? choice = ReadInput();
 
+            if (choice == null)
+            {
+                return;
+            }
+
             ConsoleColor? color = choice switch
             {
                 "1" => ConsoleColor.Green,
@@ -205,11 +217,6 @@ public class Game
                 "4" => ConsoleColor.Yellow,
                 _ => null
             };
-
-            if (choice == null)
-            {
-                return;
-            }
 
             if (color != null)
             {
@@ -228,206 +235,338 @@ public class Game
     // and add "Load game" to the main menu.
 
     // ------------------------------------------------------------------------
-    // TODO PBI Class Creation (Jonathan): Create Character Activity Diagram
+    // PBI Class Creation (Jonathan): Create Character Activity Diagram
     // ------------------------------------------------------------------------
-    // Returns true when a character was created and the adventure should start.
-    // Messages already written: 100-107 prompts, 110-113 race names, 114-117 occupation names,
-    // 120-124 weapon names, 130-137 stat labels for DisplayStats(), 140-143 player taunts.
-    //
-    // Suggested flow:
-    //   1. Ask race (100), name (101), occupation (102). Re-prompt on bad input with message 2.
-    //      Tip: numbered choices (1-4) work the same in all three languages; typed words don't.
-    //   2. player = new Player(name, race, occupation);  // sets weapon from occupation:
-    //         Fighter  -> "long sword", 12      Magician -> "lightning bolt spell", 12
-    //         Thief    -> "dagger", 6           Archer   -> "long bow", 8
-    //   3. Strength: show 103, wait for "roll", die.Roll(20).
-    //         Human/Elf/Dwarf: + die.Roll(4)      Halfling: - die.Roll(4)
-    //   4. Agility: show 104, wait for "roll", die.Roll(20).  Halfling/Elf: + die.Roll(4)
-    //   5. Health: show 105, wait for "roll", die.Roll(20) + the strength modifier from step 3.
-    //         Open question: the diagram skips the modifier for Halflings, but the dialog says to add it.
-    //   6. Loop on 107: "1" -> Console.WriteLine(player.DisplayStats()); "2" -> return true.
-    
-private bool CreateCharacter()
-{
-    // Select race
-    Race race;
-
-    while (true)
+    // Returns true when a character was created and the player chose to go on an adventure.
+    private bool CreateCharacter()
     {
-        Console.WriteLine(messages.GetMessage(100));
+        // Select race
+        Race race;
 
-        string? choice = ReadInput();
-
-        if (choice == null)
-            return false;
-
-        switch (choice)
+        while (true)
         {
-            case "1":
-                race = Race.Human;
-                break;
-            case "2":
-                race = Race.Elf;
-                break;
-            case "3":
-                race = Race.Dwarf;
-                break;
-            case "4":
-                race = Race.Halfling;
-                break;
-            default:
+            Console.WriteLine(messages.GetMessage(100)); // 1. Human 2. Elf 3. Dwarf 4. Halfling
+
+            string? choice = ReadInput();
+
+            if (choice == null)
+                return false;
+
+            switch (choice)
+            {
+                case "1":
+                    race = Race.Human;
+                    break;
+                case "2":
+                    race = Race.Elf;
+                    break;
+                case "3":
+                    race = Race.Dwarf;
+                    break;
+                case "4":
+                    race = Race.Halfling;
+                    break;
+                default:
+                    Console.WriteLine(messages.GetMessage(2));
+                    continue;
+            }
+
+            break;
+        }
+
+        // Enter player name (keeps the player's capital letters)
+        string name;
+
+        while (true)
+        {
+            Console.WriteLine(messages.GetMessage(101));
+
+            string? input = ReadInputKeepCase();
+
+            if (input == null)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
                 Console.WriteLine(messages.GetMessage(2));
                 continue;
+            }
+
+            name = input;
+            break;
         }
 
-        break;
-    }
+        // Select occupation
+        Occupation occupation;
 
-    // Enter player name
-    string name;
-
-    while (true)
-    {
-        Console.WriteLine(messages.GetMessage(101));
-
-        string? input = ReadInput();
-
-        if (input == null)
-            return false;
-
-        if (string.IsNullOrWhiteSpace(input))
+        while (true)
         {
-            Console.WriteLine(messages.GetMessage(2));
-            continue;
+            Console.WriteLine(messages.GetMessage(102)); // 1. Fighter 2. Magician 3. Thief 4. Archer
+
+            string? choice = ReadInput();
+
+            if (choice == null)
+                return false;
+
+            switch (choice)
+            {
+                case "1":
+                    occupation = Occupation.Fighter;
+                    break;
+                case "2":
+                    occupation = Occupation.Magician;
+                    break;
+                case "3":
+                    occupation = Occupation.Thief;
+                    break;
+                case "4":
+                    occupation = Occupation.Archer;
+                    break;
+                default:
+                    Console.WriteLine(messages.GetMessage(2));
+                    continue;
+            }
+
+            break;
         }
 
-        name = input;
-        break;
-    }
-
-    // Select occupation
-    Occupation occupation;
-
-    while (true)
-    {
-        Console.WriteLine(messages.GetMessage(102));
-
-        string? choice = ReadInput();
-
-        if (choice == null)
-            return false;
-
-        switch (choice)
-        {
-            case "1":
-                occupation = Occupation.Fighter;
-                break;
-            case "2":
-                occupation = Occupation.Magician;
-                break;
-            case "3":
-                occupation = Occupation.Thief;
-                break;
-            case "4":
-                occupation = Occupation.Archer;
-                break;
-            default:
-                Console.WriteLine(messages.GetMessage(2));
-                continue;
-        }
-
-        break;
-    }
-
-    // Create the player using the existing Player class
-    player = new Player(name, race, occupation, die);
+        // Create the player using the existing Player class
+        player = new Player(name, race, occupation, die);
 
         // Roll Strength
         if (!WaitForRoll(103))
             return false;
 
         player.RollStrength(die);
+        ShowRoll(1);
 
         // Roll Agility
         if (!WaitForRoll(104))
             return false;
 
         player.RollAgility(die);
+        ShowRoll(2);
 
         // Roll Health
         if (!WaitForRoll(105))
             return false;
 
         player.RollHealth(die);
+        ShowRoll(3);
 
-
-    // Display character statistics or continue
-    while (true)
-    {
-        Console.WriteLine(messages.GetMessage(107));
-
-        string? choice = ReadInput();
-
-        switch (choice)
+        // Display character statistics or continue
+        while (true)
         {
-            case "1":
-                player.DisplayStats();
-                break;
+            Console.WriteLine(messages.GetMessage(107));
 
-            case "2":
-                return true;
+            string? choice = ReadInput();
 
-            case null:
-                return false;
+            switch (choice)
+            {
+                case "1":
+                    Console.WriteLine(player.DisplayStats(messages));
+                    break;
 
-            default:
-                Console.WriteLine(messages.GetMessage(2));
-                break;
+                case "2":
+                    return true;
+
+                case null:
+                    return false;
+
+                default:
+                    Console.WriteLine(messages.GetMessage(2));
+                    break;
+            }
         }
     }
-}
 
-
-    // ------------------------------------------------------------------------
-    // TODO PBI Story (John) + PBI Dragon (Ryan): rest of Start Game Activity Diagram
-    // ------------------------------------------------------------------------
-    // Messages already written: 200-205.
-    //
-    // Suggested flow (loop until the game ends):
-    //   Show 200 (n / s / e).
-    //     "s" -> show 201, loop back to 200.
-    //     "e" -> EndGame(...) and return.
-    //     "n" -> show 202
-    //            Console.ForegroundColor = ConsoleColor.Red;
-    //            show GetMessage(203, dragon.Name)
-    //            ApplyTextColor();                        // back to the player's color
-    //            show 204, then Console.WriteLine(dragon.DisplayStats());
-    //            show 205 (r / a):
-    //               "r" -> EndGame(Retreat) and return
-    //               "a" -> StartCombat() (below)
-    private void StartAdventure()
+    // Keeps asking until the player types "roll". Returns false if input ends.
+    private bool WaitForRoll(int messageId)
     {
+        while (true)
+        {
+            Console.WriteLine(messages.GetMessage(messageId));
+
+            string? input = ReadInput();
+
+            if (input == null)
+                return false;
+
+            if (input == "roll")
+                return true;
+
+            Console.WriteLine(messages.GetMessage(106)); // Please type 'roll'.
+        }
+    }
+
+    // Shows the roll that was just made, the racial modifier, and the stats rolled so far:
+    //
+    //      +-----+
+    //      | 14  |  d20
+    //      +-----+
+    //   You rolled a 14 on the 20-sided die.
+    //   Elf racial modifier: +3
+    //
+    //   Your stats so far:
+    //     Strength: 17
+    private void ShowRoll(int statsRolled)
+    {
+        Player p = player!;
+
+        Console.WriteLine("   +-----+");
+        Console.WriteLine($"   | {p.LastDieRoll,2}  |  d20");
+        Console.WriteLine("   +-----+");
+        Console.WriteLine(messages.GetMessage(108, p.LastDieRoll)); // You rolled a {0}
+
+        if (p.LastModifier != 0)
+        {
+            string modifier = p.LastModifier.ToString("+0;-0"); // always show the sign: +3 or -2
+            Console.WriteLine(messages.GetMessage(109, messages.GetRaceName(p.Race), modifier));
+        }
+        else
+        {
+            Console.WriteLine(messages.GetMessage(118)); // No racial modifier.
+        }
+
+        Console.WriteLine();
+        Console.WriteLine(messages.GetMessage(119)); // Your stats so far:
+        Console.WriteLine("  " + messages.GetMessage(133, p.Strength));
+        if (statsRolled >= 2)
+        {
+            Console.WriteLine("  " + messages.GetMessage(134, p.Agility));
+        }
+        if (statsRolled >= 3)
+        {
+            Console.WriteLine("  " + messages.GetMessage(135, p.Health));
+        }
+        Console.WriteLine();
     }
 
     // ------------------------------------------------------------------------
-    // TODO PBI Combat (Sina): Attack Activity Diagram
+    // PBI Story (John): rest of the Start Game Activity Diagram
     // ------------------------------------------------------------------------
-    // Messages already written: 300-313 combat, 250-257 dragon taunts, 260-263 dragon replies.
-    //
-    // Sequence Diagram: Combat combat = new Combat(player, dragon);
-    // Each round:
-    //   combat.PlayerAttacksDragonSequence();   // show 300 + weapon ASCII art, roll vs strength/agility
-    //   if dragon health <= 0 -> show 305, EndGame(DragonDefeated), return
-    //   combat.DragonAttacksPlayerSequence();
-    //   if player health <= 0 -> show 311, EndGame(PlayerDefeated), return
-    //   show 312 (r / a):
-    //      "a" -> next round
-    //      "r" -> show 313, then go back to the adventure menu (message 200), NOT End Game
-    //             (dialog Appendix D; the diagram says "main menu" but means the n/s/e menu).
-    // Combat will need `die` and `messages`. Pass them into the Combat constructor or as parameters.
-    // private void StartCombat()
-    // {
-    // }
+
+    // The adventure menu: North, South, or Exit. Loops until the game ends.
+    private void StartAdventure()
+    {
+        while (true)
+        {
+            Console.WriteLine(messages.GetMessage(200)); // walking in the mountains... n / s / e
+            string? choice = ReadInput();
+
+            switch (choice)
+            {
+                case "s":
+                    Console.WriteLine(messages.GetMessage(201)); // South: bored, return home
+                    break; // back to the adventure menu
+
+                case "n":
+                    if (MeetTheDragon())
+                    {
+                        return; // the game ended
+                    }
+                    break; // retreated mid-combat: back to the adventure menu
+
+                case "e":
+                case null:
+                    EndGame(EndCondition.Quit);
+                    return;
+
+                default:
+                    Console.WriteLine(messages.GetMessage(2));
+                    break;
+            }
+        }
+    }
+
+    // North path: the dragon encounter. Returns true when the game has ended.
+    private bool MeetTheDragon()
+    {
+        Console.WriteLine(messages.GetMessage(202)); // You take the North path... confronted with a dragon
+
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(messages.GetMessage(203, dragon.Name)); // I am {name}. Leave or perish!
+        ApplyTextColor(); // back to the player's chosen color (green by default)
+
+        Console.WriteLine(messages.GetMessage(204)); // Your magic ring gives you the stats on the dragon.
+        Console.WriteLine(dragon.DisplayStats(messages));
+
+        while (true)
+        {
+            Console.WriteLine(messages.GetMessage(205)); // retreat (r) or attack (a)?
+            string? choice = ReadInput();
+
+            switch (choice)
+            {
+                case "r":
+                    EndGame(EndCondition.Retreat);
+                    return true;
+
+                case "a":
+                    return StartCombat();
+
+                case null:
+                    EndGame(EndCondition.Quit);
+                    return true;
+
+                default:
+                    Console.WriteLine(messages.GetMessage(2));
+                    break;
+            }
+        }
+    }
+
+    // Attack Activity Diagram: rounds of player attack + dragon attack, then retreat or attack again.
+    // Returns true when the game has ended, false when the player retreated back to the adventure menu.
+    private bool StartCombat()
+    {
+        // Sequence Diagram: new Combat(player, dragon)
+        CombatSystem combat = new CombatSystem(player!, dragon, die, messages);
+
+        while (true)
+        {
+            combat.PlayerAttacksDragonSequence();
+            if (!dragon.IsAlive())
+            {
+                EndGame(EndCondition.DragonDefeated);
+                return true;
+            }
+
+            combat.DragonAttacksPlayerSequence();
+            if (!player!.IsAlive())
+            {
+                EndGame(EndCondition.PlayerDefeated);
+                return true;
+            }
+
+            // Ask until the player gives a valid answer
+            string? choice;
+            while (true)
+            {
+                Console.WriteLine(messages.GetMessage(312)); // r = retreat, a = attack
+                choice = ReadInput();
+                if (choice is "a" or "r" or null)
+                {
+                    break;
+                }
+                Console.WriteLine(messages.GetMessage(2));
+            }
+
+            if (choice == "r")
+            {
+                // Appendix D: retreating mid-fight goes back to the adventure menu, not End Game.
+                Console.WriteLine(messages.GetMessage(313)); // You hastily retreat licking your wounds.
+                return false;
+            }
+
+            if (choice == null)
+            {
+                EndGame(EndCondition.Quit);
+                return true;
+            }
+            // "a": next round
+        }
+    }
 
     // ------------------------------------------------------------------------
     // Helpers shared by everyone
@@ -435,27 +574,45 @@ private bool CreateCharacter()
 
     // Reads one line of player input: trimmed and lower-case, so "N", " n " and "n" all match "n".
     // Returns null when input has ended. Treat that as "quit" so the game never loops forever.
-    private bool WaitForRoll(int messageId)
-{
-    while (true)
-    {
-        Console.WriteLine(messages.GetMessage(messageId));
-
-        string? input = ReadInput();
-
-        if (input == null)
-            return false;
-
-        if (input == "roll")
-            return true;
-
-        Console.WriteLine(messages.GetMessage(2));
-    }
-}
-    
     private static string? ReadInput()
     {
-        return Console.ReadLine()?.Trim().ToLowerInvariant();
+        return ReadInputKeepCase()?.ToLowerInvariant();
+    }
+
+    // Same as ReadInput() but keeps capital letters (used for the character's name).
+    // After each choice the screen is cleared and the choice is shown at the top,
+    // followed by whatever happens next.
+    private static string? ReadInputKeepCase()
+    {
+        string? input = Console.ReadLine()?.Trim();
+
+        if (input != null && ClearScreen())
+        {
+            Console.WriteLine($"> {input}");
+            Console.WriteLine();
+        }
+
+        return input;
+    }
+
+    // Clears the console window. Returns false (and does nothing) when output isn't a real
+    // screen, e.g. in unit tests, where Console.Clear() would throw an error.
+    private static bool ClearScreen()
+    {
+        if (Console.IsOutputRedirected)
+        {
+            return false;
+        }
+
+        try
+        {
+            Console.Clear();
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
     }
 
     private void ApplyTextColor()

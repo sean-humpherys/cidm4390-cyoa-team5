@@ -1,111 +1,245 @@
-// CombatSystemTests.cs
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace CYOA.Tests;
 
+// Tests for CombatSystem, following the Attack Activity Diagram:
+//   hit      = d20 <= attacker's Strength
+//   defend   = d20 <= defender's Agility
+//   damage   = roll up to the weapon's damage
+// ScriptedDie controls every roll, so each test knows exactly what should happen.
+// Combat prints to the console, so these tests capture Console output (and can't run in parallel).
 [TestClass]
-public class CombatSystemTests
+[DoNotParallelize]
+public sealed class CombatSystemTests
 {
-    // A controllable Die to guarantee deterministic unit test results 
-    public class MockDie : Die
-    {
-        private int _fixedRollValue;
-        
-        public MockDie(int fixedRollValue)
-        {
-            _fixedRollValue = fixedRollValue;
-        }
+    private TextWriter originalOut = null!;
+    private StringWriter output = null!;
+    private Messages messages = null!;
+    private ScriptedDie dice = null!;
 
-        public override int Roll(int sides)
-        {
-            return _fixedRollValue;
-        }
+    [TestInitialize]
+    public void Setup()
+    {
+        originalOut = Console.Out;
+        output = new StringWriter();
+        Console.SetOut(output);
+        messages = new Messages();
+        dice = new ScriptedDie();
     }
 
-    [TestMethod]
-    public void PlayerAttacksDragonSequence_HitSuccess_ReducesDragonHealth()
+    [TestCleanup]
+    public void RestoreConsole()
     {
-        // Arrange
-        var player = new Player { Health = 20, Strength = 10, Weapon = new Weapon { MaxDamage = 8 } };
-        var dragon = new Dragon { Health = 20, Agility = 2 };
-        
-        // MockDie set to 5. 
-        // Player attack: 5 + 10 (Strength) = 15
-        // Dragon defense: 5 + 2 (Agility) = 7. Hit succeeds. 
-        // Damage dealt: 5. Dragon health goes from 20 -> 15.
-        var combat = new CombatSystem(player, dragon, new MockDie(5));
+        Console.SetOut(originalOut);
+    }
 
-        // Act
+    // A Human player with exact stats.
+    // Human rolls: d4 then d20 for Strength, d20 for Agility, d20 + the d4 for Health.
+    private Player CreatePlayer(int strength, int agility, int health, Occupation occupation = Occupation.Fighter)
+    {
+        dice.Add(1, strength - 1, agility, health - 1);
+        Player player = new Player("Aria", Race.Human, occupation, dice);
+        player.RollStrength(dice);
+        player.RollAgility(dice);
+        player.RollHealth(dice);
+        return player;
+    }
+
+    // A dragon with exact stats (the constructor rolls Strength, Agility, Health in that order).
+    private Dragon CreateDragon(int strength, int agility, int health)
+    {
+        dice.Add(strength, agility, health);
+        return new Dragon("Fafnir", dice);
+    }
+
+    private CombatSystem CreateCombat(Player player, Dragon dragon)
+    {
+        return new CombatSystem(player, dragon, dice, messages);
+    }
+
+    // ---------- Player attacks dragon ----------
+
+    [TestMethod]
+    public void PlayerAttack_HitAndDragonFailsDefense_DamagesDragon()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20), CreateDragon(10, 5, 20));
+        dice.Add(5, 15, 7, 1); // attack 5 <= 10 hits, defense 15 > 5 fails, 7 damage, taunt #1
+
         combat.PlayerAttacksDragonSequence();
 
-        // Assert
-        Assert.AreEqual(15, dragon.Health, "Dragon's health should be reduced by the exact mocked die damage roll.");
+        Assert.AreEqual(13, combat.Dragon.Health);
+        Assert.Contains("You hit Fafnir.", output.ToString());
+        Assert.Contains("Your weapon delivers 7 damage points. The dragon's health points is now 13.", output.ToString());
+        Assert.Contains("Ow! That actually stung a bit!", output.ToString());
+        Assert.AreEqual(0, dice.RollsLeft);
     }
 
     [TestMethod]
-    public void DragonAttacksPlayerSequence_Miss_LeavesPlayerHealthUnchanged()
+    public void PlayerAttack_RollAboveStrength_Misses()
     {
-        // Arrange
-        var player = new Player { Health = 20, Agility = 10 };
-        var dragon = new Dragon { Health = 20, Strength = 2, Weapon = new Weapon { MaxDamage = 10 } };
-        
-        // MockDie set to 5.
-        // Dragon attack: 5 + 2 (Strength) = 7.
-        // Player defense: 5 + 10 (Agility) = 15. Hit fails.
-        var combat = new CombatSystem(player, dragon, new MockDie(5));
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20), CreateDragon(10, 5, 20));
+        dice.Add(11); // 11 > 10 misses
 
-        // Act
+        combat.PlayerAttacksDragonSequence();
+
+        Assert.AreEqual(20, combat.Dragon.Health);
+        Assert.Contains("You missed Fafnir.", output.ToString());
+    }
+
+    [TestMethod]
+    public void PlayerAttack_RollEqualToStrength_Hits()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20), CreateDragon(10, 5, 20));
+        dice.Add(10, 20, 1, 1); // 10 <= 10 hits (boundary), defense fails, 1 damage, taunt
+
+        combat.PlayerAttacksDragonSequence();
+
+        Assert.AreEqual(19, combat.Dragon.Health);
+    }
+
+    [TestMethod]
+    public void PlayerAttack_DragonDefends_NoDamageAndDragonTaunts()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20), CreateDragon(10, 5, 20));
+        dice.Add(1, 5, 3); // hit, defense 5 <= 5 succeeds, taunt #3 uses the race
+
+        combat.PlayerAttacksDragonSequence();
+
+        Assert.AreEqual(20, combat.Dragon.Health);
+        Assert.Contains("Fafnir successfully defends your attack.", output.ToString());
+        Assert.Contains("Try harder, Human! You're making me yawn!", output.ToString());
+    }
+
+    [TestMethod]
+    public void PlayerAttack_FinalBlow_DefeatsDragonAtZeroHealth()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20), CreateDragon(10, 5, 3));
+        dice.Add(1, 20, 12); // hit, defense fails, 12 damage vs 3 health. No taunt roll after death.
+
+        combat.PlayerAttacksDragonSequence();
+
+        Assert.AreEqual(0, combat.Dragon.Health);
+        Assert.IsTrue(combat.IsOver);
+        Assert.Contains("With the last words of 'Arggg!', you have defeated the dragon.", output.ToString());
+    }
+
+    [TestMethod]
+    [DataRow(Occupation.Fighter, "-)=====>")]
+    [DataRow(Occupation.Magician, "zap~~~~~~")]
+    [DataRow(Occupation.Thief, "-)==>")]
+    [DataRow(Occupation.Archer, "}     -->")]
+    public void PlayerAttack_ShowsTheWeaponAsciiArt(Occupation occupation, string art)
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20, occupation), CreateDragon(10, 5, 20));
+        dice.Add(20); // miss
+
+        combat.PlayerAttacksDragonSequence();
+
+        Assert.Contains(art, output.ToString());
+    }
+
+    [TestMethod]
+    public void PlayerAttack_IntroNamesOccupationAndWeapon()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20, Occupation.Thief), CreateDragon(10, 5, 20));
+        dice.Add(20);
+
+        combat.PlayerAttacksDragonSequence();
+
+        Assert.Contains("As a Thief you withdraw your dagger. You attack.", output.ToString());
+    }
+
+    // ---------- Dragon attacks player ----------
+
+    [TestMethod]
+    public void DragonAttack_HitAndPlayerFailsDefense_DamagesPlayer()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 5, 20), CreateDragon(10, 5, 20));
+        dice.Add(5, 15, 8, 2); // hit, defense 15 > 5 fails, 8 damage, sarcastic reply #2
+
         combat.DragonAttacksPlayerSequence();
 
-        // Assert
-        Assert.AreEqual(20, player.Health, "Player's health should remain unchanged on a missed attack.");
+        Assert.AreEqual(12, combat.Player.Health);
+        Assert.Contains("Dragon's turn to attack.", output.ToString());
+        Assert.Contains("Fafnir hits you.", output.ToString());
+        Assert.Contains("The dragon's attack delivers 8 damage points. Your health points is now 12.", output.ToString());
+        Assert.Contains("You're still standing?", output.ToString());
     }
 
     [TestMethod]
-    public void CombatSequence_HealthDoesNotDropBelowZero()
+    public void DragonAttack_RollAboveStrength_Misses()
     {
-        // Arrange
-        var player = new Player { Health = 2, Strength = 10, Weapon = new Weapon { MaxDamage = 15 } };
-        var dragon = new Dragon { Health = 3, Agility = 2, Weapon = new Weapon { MaxDamage = 15 } };
-        
-        // Rolling a 10 deals 10 damage, which is more than either entity's current health
-        var combat = new CombatSystem(player, dragon, new MockDie(10)); 
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 5, 20), CreateDragon(10, 5, 20));
+        dice.Add(11);
 
-        // Act
+        combat.DragonAttacksPlayerSequence();
+
+        Assert.AreEqual(20, combat.Player.Health);
+        Assert.Contains("The dragon missed you.", output.ToString());
+    }
+
+    [TestMethod]
+    public void DragonAttack_PlayerDefends_NoDamageAndPlayerTaunts()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 5, 20), CreateDragon(10, 5, 20));
+        dice.Add(1, 5, 1); // hit, defense 5 <= 5 succeeds, player taunt #1
+
+        combat.DragonAttacksPlayerSequence();
+
+        Assert.AreEqual(20, combat.Player.Health);
+        Assert.Contains("You successfully defend the attack.", output.ToString());
+        Assert.Contains("Ha! Too slow, you overgrown lizard!", output.ToString());
+    }
+
+    [TestMethod]
+    public void DragonAttack_FinalBlow_DefeatsPlayerAtZeroHealth()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 5, 2), CreateDragon(10, 5, 20));
+        dice.Add(1, 20, 12);
+
+        combat.DragonAttacksPlayerSequence();
+
+        Assert.AreEqual(0, combat.Player.Health);
+        Assert.IsTrue(combat.IsOver);
+        Assert.Contains("With the last words of 'Oh no!', you have been defeated by the dragon.", output.ToString());
+    }
+
+    // ---------- Rules for both sides ----------
+
+    [TestMethod]
+    public void NoOneCanAttack_AfterSomeoneIsDefeated()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 5, 2), CreateDragon(10, 5, 20));
+        dice.Add(1, 20, 12);
+        combat.DragonAttacksPlayerSequence(); // player defeated
+
+        // No rolls are queued, so ScriptedDie would fail the test if either attack rolled.
+        combat.PlayerAttacksDragonSequence();
+        combat.DragonAttacksPlayerSequence();
+
+        Assert.AreEqual(20, combat.Dragon.Health);
+        Assert.AreEqual(0, combat.Player.Health);
+    }
+
+    [TestMethod]
+    public void CombatText_UsesTheChosenLanguage()
+    {
+        CombatSystem combat = CreateCombat(CreatePlayer(10, 10, 20), CreateDragon(10, 5, 20));
+        messages.SetCurrentLanguage(Languages.Spanish);
+        dice.Add(11);
+
         combat.PlayerAttacksDragonSequence();
 
-        // Assert
-        Assert.AreEqual(0, dragon.Health, "Dragon's health should bottom out at 0 instead of entering negative values.");
+        Assert.Contains("No le diste a Fafnir.", output.ToString());
     }
 
     [TestMethod]
-    public void StartCombat_LoopTerminates_WhenHealthReachesZero()
+    public void Constructor_NullArguments_Throw()
     {
-        // Arrange
-        var player = new Player { Health = 50, Strength = 20, Weapon = new Weapon { MaxDamage = 10 } };
-        var dragon = new Dragon { Health = 10, Agility = 1, Strength = 1, Weapon = new Weapon { MaxDamage = 10 } };
-        
-        var combat = new CombatSystem(player, dragon, new MockDie(5));
+        Player player = CreatePlayer(10, 10, 20);
+        Dragon dragon = CreateDragon(10, 5, 20);
 
-        // Act
-        combat.StartCombat(); // Loop will automatically execute attacks until someone drops to 0
-
-        // Assert
-        Assert.AreEqual(0, dragon.Health, "Combat loop should properly conclude with Dragon defeated.");
-        Assert.IsTrue(player.Health > 0, "Player should survive the encounter.");
-    }
-
-    [TestMethod]
-    public void ActionValidation_DeadEntityCannotAttack()
-    {
-        // Arrange
-        var player = new Player { Health = 0, Strength = 20, Weapon = new Weapon { MaxDamage = 10 } };
-        var dragon = new Dragon { Health = 20, Agility = 1 };
-        
-        var combat = new CombatSystem(player, dragon, new MockDie(10));
-
-        // Act
-        combat.PlayerAttacksDragonSequence();
-
-        // Assert
-        Assert.AreEqual(20, dragon.Health, "A player with 0 health should not be able to execute an attack sequence.");
+        Assert.ThrowsExactly<ArgumentNullException>(() => new CombatSystem(null!, dragon, dice, messages));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new CombatSystem(player, null!, dice, messages));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new CombatSystem(player, dragon, null!, messages));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new CombatSystem(player, dragon, dice, null!));
     }
 }
