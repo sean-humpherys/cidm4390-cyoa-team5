@@ -4,6 +4,7 @@
 //   Defense works   when a d20 roll  <= the defender's Agility.
 //   Damage          is a roll up to the attacker's weapon damage.
 // Game.StartCombat() runs the rounds and asks retreat/attack between them.
+// Spoken lines go through Dialogue.cs: dragon in red, player in green.
 using System;
 
 public class CombatSystem
@@ -52,7 +53,7 @@ public class CombatSystem
         if (_die.Roll(20) <= Dragon.Agility)
         {
             Console.WriteLine(_messages.GetMessage(303, Dragon.Name));
-            Console.WriteLine(Dragon.MissedMeTaunt(_messages, _messages.GetRaceName(Player.Race)));
+            Dialogue.Dragon(_messages, Dragon.Name, Dragon.MissedMeTaunt(_messages, _messages.GetRaceName(Player.Race)));
             return;
         }
 
@@ -66,7 +67,7 @@ public class CombatSystem
         }
         else
         {
-            Console.WriteLine(Dragon.WasHitTaunt(_messages));
+            Dialogue.Dragon(_messages, Dragon.Name, Dragon.WasHitTaunt(_messages));
         }
     }
 
@@ -89,7 +90,7 @@ public class CombatSystem
         if (_die.Roll(20) <= Player.Agility)
         {
             Console.WriteLine(_messages.GetMessage(309));
-            Console.WriteLine(Player.MissedMeTaunt(_messages));
+            Dialogue.Player(_messages, Player.Name, Player.MissedMeTaunt(_messages));
             return;
         }
 
@@ -103,7 +104,7 @@ public class CombatSystem
         }
         else
         {
-            Console.WriteLine(Dragon.HitPlayerTaunt(_messages));
+            Dialogue.Dragon(_messages, Dragon.Name, Dragon.HitPlayerTaunt(_messages));
         }
     }
 

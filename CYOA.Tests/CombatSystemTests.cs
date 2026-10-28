@@ -68,7 +68,7 @@ public sealed class CombatSystemTests
         Assert.AreEqual(13, combat.Dragon.Health);
         Assert.Contains("You hit Fafnir.", output.ToString());
         Assert.Contains("Your weapon delivers 7 damage points. The dragon's health points is now 13.", output.ToString());
-        Assert.Contains("Ow! That actually stung a bit!", output.ToString());
+        Assert.Contains("Fafnir: \"Ow! That actually stung a bit!\"", output.ToString()); // dragon speaks, labeled
         Assert.AreEqual(0, dice.RollsLeft);
     }
 
@@ -105,7 +105,7 @@ public sealed class CombatSystemTests
 
         Assert.AreEqual(20, combat.Dragon.Health);
         Assert.Contains("Fafnir successfully defends your attack.", output.ToString());
-        Assert.Contains("Try harder, Human! You're making me yawn!", output.ToString());
+        Assert.Contains("Fafnir: \"Try harder, Human! You're making me yawn!\"", output.ToString());
     }
 
     [TestMethod]
@@ -161,7 +161,7 @@ public sealed class CombatSystemTests
         Assert.Contains("Dragon's turn to attack.", output.ToString());
         Assert.Contains("Fafnir hits you.", output.ToString());
         Assert.Contains("The dragon's attack delivers 8 damage points. Your health points is now 12.", output.ToString());
-        Assert.Contains("You're still standing?", output.ToString());
+        Assert.Contains("Fafnir: \"You're still standing?", output.ToString());
     }
 
     [TestMethod]
@@ -186,7 +186,7 @@ public sealed class CombatSystemTests
 
         Assert.AreEqual(20, combat.Player.Health);
         Assert.Contains("You successfully defend the attack.", output.ToString());
-        Assert.Contains("Ha! Too slow, you overgrown lizard!", output.ToString());
+        Assert.Contains("Aria: \"Ha! Too slow, you overgrown lizard!\"", output.ToString()); // player speaks, labeled
     }
 
     [TestMethod]
