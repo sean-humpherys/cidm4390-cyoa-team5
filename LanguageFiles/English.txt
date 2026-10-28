@@ -27,8 +27,10 @@
 6=This part of the adventure is still being built. Returning to the main menu.
 10=Settings:\n  1. Change language\n  2. Change text color\n  3. Return to main menu\nType '1', '2' or '3'.
 11=Language changed to English.
-12=Choose a text color:\n  1. Green\n  2. White\n  3. Cyan\n  4. Yellow\nType '1', '2', '3' or '4'.
+12=Choose a text color:\n  1. Gray (default)\n  2. White\n  3. Cyan\n  4. Yellow\nType '1', '2', '3' or '4'.
 13=Text color changed.
+# Speech line: {0} = who is speaking, {1} = what they say (see Dialogue.cs)
+20={0}: "{1}"
 # 90 - 99 reserved for the optional Save/Load feature.
 
 # ---------- 100 - 199: Character creation (PBI Class Creation) ----------
@@ -99,6 +101,8 @@
 261=You're still standing? Your persistence is almost as annoying as your sword.
 262=Still breathing? You really are a stubborn, aren't you?
 263=I'm genuinely impressed. Most people have the common sense to die much faster than this.
+# The dragon's name
+264=Fire Dragon
 
 # ---------- 300 - 399: Combat (PBI Combat) ----------
 # {0} = occupation, {1} = weapon

@@ -12,7 +12,8 @@ using System.Text;
 //   - Get every player-facing string from messages.GetMessage(id). Never hard-code text.
 //   - Read player input with ReadInput(). It trims and lower-cases, and returns null if input ends.
 //     On a real console it also clears the screen and shows the choice at the top ("> n").
-//   - After printing something in another color (e.g. the red dragon line), restore TextColor.
+//   - Print anything a character SAYS with Dialogue.Dragon(...) or Dialogue.Player(...).
+//     They use red / green and put the narration color (TextColor) back afterwards.
 public class Game
 {
     // Class Diagram: Game "rolls" Die. Sequence Diagram: Game creates Die first.
@@ -27,8 +28,9 @@ public class Game
     // Class Diagram: Game "Creates" Player (during character creation).
     private Player? player;
 
-    // Settings: the normal text color. Stakeholder (Appendix B) wants green by default.
-    public ConsoleColor TextColor { get; private set; } = ConsoleColor.Green;
+    // Settings: the narration color. Gray (the normal console color) by default, so the
+    // player's green dialogue and the dragon's red dialogue stand out from it.
+    public ConsoleColor TextColor { get; private set; } = ConsoleColor.Gray;
 
     public Game() : this(new Die())
     {
@@ -59,7 +61,7 @@ public class Game
         }
 
         ApplyTextColor();
-        ClearScreen();
+        // ClearScreen(); // SCREEN CLEAR (disabled): start the game on a blank screen
         ChooseLanguage();
         Console.WriteLine(messages.GetMessage(3)); // Welcome to Choose Your Adventure Game
         ShowMainMenu();
@@ -201,7 +203,8 @@ public class Game
     {
         while (true)
         {
-            Console.WriteLine(messages.GetMessage(12)); // 1. Green 2. White 3. Cyan 4. Yellow
+            Console.WriteLine(messages.GetMessage(12)); // 1. Gray 2. White 3. Cyan 4. Yellow
+            // Green and red are left out on purpose: they are the player's and dragon's dialogue colors.
             string? choice = ReadInput();
 
             if (choice == null)
@@ -211,7 +214,7 @@ public class Game
 
             ConsoleColor? color = choice switch
             {
-                "1" => ConsoleColor.Green,
+                "1" => ConsoleColor.Gray,
                 "2" => ConsoleColor.White,
                 "3" => ConsoleColor.Cyan,
                 "4" => ConsoleColor.Yellow,
@@ -484,9 +487,10 @@ public class Game
     {
         Console.WriteLine(messages.GetMessage(202)); // You take the North path... confronted with a dragon
 
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(messages.GetMessage(203, dragon.Name)); // I am {name}. Leave or perish!
-        ApplyTextColor(); // back to the player's chosen color (green by default)
+        dragon.Name = messages.GetMessage(264); // "Fire Dragon" in the current language
+
+        // Appendix B: the dragon's line in red, then back to the narration color
+        Dialogue.Say(Dialogue.DragonColor, messages.GetMessage(203, dragon.Name)); // I am {name}. Leave or perish!
 
         Console.WriteLine(messages.GetMessage(204)); // Your magic ring gives you the stats on the dragon.
         Console.WriteLine(dragon.DisplayStats(messages));
@@ -580,40 +584,42 @@ public class Game
     }
 
     // Same as ReadInput() but keeps capital letters (used for the character's name).
-    // After each choice the screen is cleared and the choice is shown at the top,
-    // followed by whatever happens next.
+    // (Screen clearing after each choice is currently disabled; see "SCREEN CLEAR (disabled)".)
     private static string? ReadInputKeepCase()
     {
         string? input = Console.ReadLine()?.Trim();
 
-        if (input != null && ClearScreen())
-        {
-            Console.WriteLine($"> {input}");
-            Console.WriteLine();
-        }
+        // SCREEN CLEAR (disabled): clear the screen after each choice and show the choice at the top
+        // if (input != null && ClearScreen())
+        // {
+        //     Console.WriteLine($"> {input}");
+        //     Console.WriteLine();
+        // }
 
         return input;
     }
 
+    // SCREEN CLEAR (disabled): to turn screen clearing back on, uncomment this method
+    // and the two other spots marked "SCREEN CLEAR (disabled)" in this file (lines 64 and 593-597).
     // Clears the console window. Returns false (and does nothing) when output isn't a real
     // screen, e.g. in unit tests, where Console.Clear() would throw an error.
-    private static bool ClearScreen()
-    {
-        if (Console.IsOutputRedirected)
-        {
-            return false;
-        }
-
-        try
-        {
-            Console.Clear();
-            return true;
-        }
-        catch (IOException)
-        {
-            return false;
-        }
-    }
+    // private static bool ClearScreen()
+    // {
+    //     if (Console.IsOutputRedirected)
+    //     {
+    //         return false;
+    //     }
+    //
+    //     try
+    //     {
+    //         Console.Clear();
+    //         return true;
+    //     }
+    //     catch (IOException)
+    //     {
+    //         return false;
+    //     }
+    // }
 
     private void ApplyTextColor()
     {

@@ -251,7 +251,7 @@ public sealed class AdventureTests
 
         string output = Play(dice, inputs);
 
-        Assert.Contains("El dragón dice: 'Soy Fire Dragon. ¡Vete o perece!'", output);
+        Assert.Contains("El dragón dice: 'Soy Dragón de Fuego. ¡Vete o perece!'", output);
         Assert.Contains("Como Guerrero, sacas tu espada larga.", output);
         Assert.EndsWith("Con el dragón vencido, recoges el tesoro de oro y regresas a casa, rico y famoso. Fin." + Environment.NewLine, output);
     }

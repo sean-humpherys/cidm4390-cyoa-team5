@@ -105,7 +105,7 @@ public sealed class MainMenuTests
     }
 
     [TestMethod]
-    [DataRow("1", ConsoleColor.Green)]
+    [DataRow("1", ConsoleColor.Gray)]
     [DataRow("2", ConsoleColor.White)]
     [DataRow("3", ConsoleColor.Cyan)]
     [DataRow("4", ConsoleColor.Yellow)]
@@ -120,9 +120,10 @@ public sealed class MainMenuTests
     }
 
     [TestMethod]
-    public void DefaultTextColor_IsGreen()
+    public void DefaultTextColor_IsGray()
     {
-        Assert.AreEqual(ConsoleColor.Green, new Game().TextColor);
+        // Gray narration, so green (player) and red (dragon) dialogue stand out
+        Assert.AreEqual(ConsoleColor.Gray, new Game().TextColor);
     }
 
     [TestMethod]

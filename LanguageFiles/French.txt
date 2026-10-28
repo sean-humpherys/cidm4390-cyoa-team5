@@ -13,8 +13,10 @@
 6=Cette partie de l'aventure est encore en construction. Retour au menu principal.
 10=Paramètres :\n  1. Changer de langue\n  2. Changer la couleur du texte\n  3. Retour au menu principal\nTapez '1', '2' ou '3'.
 11=Langue changée en français.
-12=Choisissez une couleur de texte :\n  1. Vert\n  2. Blanc\n  3. Cyan\n  4. Jaune\nTapez '1', '2', '3' ou '4'.
+12=Choisissez une couleur de texte :\n  1. Gris (par défaut)\n  2. Blanc\n  3. Cyan\n  4. Jaune\nTapez '1', '2', '3' ou '4'.
 13=Couleur du texte changée.
+# Speech line: {0} = who is speaking, {1} = what they say (see Dialogue.cs)
+20={0} : « {1} »
 
 # ---------- 100 - 199: Character creation (PBI Class Creation) ----------
 100=De quelle race voulez-vous que soit votre personnage ?\n  1. Humain\n  2. Elfe\n  3. Nain\n  4. Halfelin\nTapez 1, 2, 3 ou 4.
@@ -76,6 +78,8 @@
 261=Encore debout ? Ta persévérance est presque aussi agaçante que ton épée.
 262=Tu respires encore ? Tu es vraiment têtu, n'est-ce pas ?
 263=Je suis sincèrement impressionné. La plupart ont le bon sens de mourir bien plus vite que ça.
+# The dragon's name
+264=Dragon de Feu
 
 # ---------- 300 - 399: Combat (PBI Combat) ----------
 300=Vous vous préparez à attaquer le dragon avec votre arme. En tant que {0}, vous dégainez votre {1}. Vous attaquez.
