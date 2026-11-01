@@ -7,7 +7,7 @@
 # ---------- 1 - 99: Menu, language picker, settings (PBI Menu) ----------
 1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
 2=Choix invalide. Veuillez réessayer.
-3=Bienvenue dans le jeu Choisissez votre aventure
+3=Bienvenue dans le jeu Choisissez votre aventure. L'histoire se déroule au pays de CYOAnia, où un terrible dragon maléfique a pris le pouvoir. Vous êtes la seule personne directement touchée par ce dragon, car vous vivez à la campagne.  Vous décidez alors de quitter votre foyer pour sauver le monde... enfin, je suppose ?
 4=Choisissez :\n  1. Créer un personnage\n  2. Quitter\n  3. Paramètres\nTapez '1', '2' ou '3'.
 5=L'aventure se termine. Au revoir.
 6=Cette partie de l'aventure est encore en construction. Retour au menu principal.
