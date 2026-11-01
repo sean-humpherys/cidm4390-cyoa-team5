@@ -340,21 +340,21 @@ public class Game
         if (!WaitForRoll(103))
             return false;
 
-        player.RollStrength(die);
+        player.RollNextAttribute();
         ShowRoll(1);
 
         // Roll Agility
         if (!WaitForRoll(104))
             return false;
 
-        player.RollAgility(die);
+        player.RollNextAttribute();
         ShowRoll(2);
 
         // Roll Health
         if (!WaitForRoll(105))
             return false;
 
-        player.RollHealth(die);
+        player.RollNextAttribute();
         ShowRoll(3);
 
         // Display character statistics or continue

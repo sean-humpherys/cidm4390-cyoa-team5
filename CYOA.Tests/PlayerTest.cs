@@ -87,7 +87,7 @@ public class PlayerTests
         Player player = new Player(
             "Hero", race, Occupation.Fighter, die);
 
-        player.RollStrength(die);
+        player.RollNextAttribute();
 
         Assert.IsTrue(
             player.Strength >= 2 &&
@@ -102,7 +102,7 @@ public class PlayerTests
             "Hero", Race.Halfling,
             Occupation.Fighter, die);
 
-        player.RollStrength(die);
+        player.RollNextAttribute();
 
         Assert.IsTrue(
             player.Strength >= 0 &&
@@ -119,7 +119,8 @@ public class PlayerTests
         Player player = new Player(
             "Hero", race, Occupation.Fighter, die);
 
-        player.RollAgility(die);
+        player.RollNextAttribute(); // Strength
+        player.RollNextAttribute(); // Agility
 
         Assert.IsTrue(
             player.Agility >= 2 &&
@@ -136,7 +137,8 @@ public class PlayerTests
         Player player = new Player(
             "Hero", race, Occupation.Fighter, die);
 
-        player.RollAgility(die);
+        player.RollNextAttribute(); // Strength
+        player.RollNextAttribute(); // Agility
 
         Assert.IsTrue(
             player.Agility >= 1 &&
@@ -151,9 +153,9 @@ public class PlayerTests
             "Hero", Race.Human,
             Occupation.Fighter, die);
 
-        player.RollStrength(die);
-        player.RollHealth(die);
-
+        player.RollNextAttribute(); // Strength
+        player.RollNextAttribute(); // Agility
+        player.RollNextAttribute(); // Health
         Assert.IsTrue(
             player.Health >= 2 &&
             player.Health <= 24);
@@ -167,13 +169,14 @@ public class PlayerTests
             "Hero", Race.Halfling,
             Occupation.Fighter, die);
 
-        player.RollStrength(die);
-        player.RollHealth(die);
+        player.RollNextAttribute(); // Strength
+        player.RollNextAttribute(); // Agility
+        player.RollNextAttribute(); // Health
 
-        Assert.IsTrue(
-            player.Health >= 1 &&
-            player.Health <= 20);
-    }
+    Assert.IsTrue(
+        player.Health >= 1 &&
+        player.Health <= 20);
+}
 
     // Verify attributes start at zero before rolling
     [TestMethod]
