@@ -37,9 +37,9 @@ public sealed class CombatSystemTests
     {
         dice.Add(1, strength - 1, agility, health - 1);
         Player player = new Player("Aria", Race.Human, occupation, dice);
-        player.RollStrength(dice);
-        player.RollAgility(dice);
-        player.RollHealth(dice);
+        player.RollNextAttribute();
+        player.RollNextAttribute();
+        player.RollNextAttribute();
         return player;
     }
 

@@ -1,44 +1,33 @@
-
 using System;
-
-public enum Race
-{
-    Human,
-    Elf,
-    Dwarf,
-    Halfling
-}
-
-public enum Occupation
-{
-    Fighter,
-    Magician,
-    Thief,
-    Archer
-}
 
 public class Player
 {
+    // Identity and starting weapon are assigned only during construction.
     public string Name { get; }
     public Race Race { get; }
     public Occupation Occupation { get; }
+    public Weapon Weapon { get; }
 
+    // External code can read attributes; only Player can modify them.
     public int Strength { get; private set; }
     public int Agility { get; private set; }
     public int Health { get; private set; }
 
-    public Weapon Weapon { get; }
-
-    // Store the strength modifier for the health roll
-    private int strengthModifier = 0;
-
-    // The d20 roll and racial modifier from the most recent
-    // RollStrength / RollAgility / RollHealth call, so the game can show them.
+    // Details of the most recent attribute roll, for the game's display.
     public int LastDieRoll { get; private set; }
     public int LastModifier { get; private set; }
 
-    // Used to pick a random taunt
+    // One shared die supplies attribute rolls and taunt selection.
     private readonly Die die;
+
+    // Health reuses the d4 Strength modifier, not the full Strength score.
+    private int strengthModifier;
+
+    // 0 = Strength, 1 = Agility, 2 = Health, 3 = all attributes rolled.
+    private int nextAttribute;
+
+    // Completion of attribute rolling is separate from whether the player is alive.
+    public bool AttributesRolled => nextAttribute == 3;
 
     public Player(
         string name,
@@ -49,146 +38,130 @@ public class Player
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException(
-                "Player name cannot be empty.",
-                nameof(name));
+                "Player name cannot be empty.", nameof(name));
         }
 
         ArgumentNullException.ThrowIfNull(die);
 
         if (!Enum.IsDefined(race))
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(race));
+            throw new ArgumentOutOfRangeException(nameof(race));
         }
 
         if (!Enum.IsDefined(occupation))
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(occupation));
+            throw new ArgumentOutOfRangeException(nameof(occupation));
         }
 
         Name = name.Trim();
         Race = race;
         Occupation = occupation;
         this.die = die;
-
         Weapon = CreateStartingWeapon();
 
-        // Attributes are now rolled individually
-        // during character creation in Game.cs
+        // Do not roll here: Game waits for each user action.
+        // Integer fields and attributes initially default to zero.
     }
 
-    // Assign starting weapon based on occupation.
-    // ASCII art comes from the stakeholder (Appendix D / Attack Activity Diagram).
+    // Game calls this once per user request; no console input occurs in Player.
+    // The fixed order guarantees Strength is rolled before Health.
+    public void RollNextAttribute()
+    {
+        switch (nextAttribute)
+        {
+            case 0:
+                RollStrength();
+                break;
+            case 1:
+                RollAgility();
+                break;
+            case 2:
+                RollHealth();
+                break;
+            default:
+                throw new InvalidOperationException(
+                    "All player attributes have already been rolled.");
+        }
+
+        // Advance only after the current roll completes successfully.
+        nextAttribute++;
+    }
+
+    // Only the constructor needs to create the starting weapon.
     private Weapon CreateStartingWeapon()
     {
         return Occupation switch
         {
             Occupation.Fighter =>
                 new Weapon("Long Sword", 12, "-)=====>"),
-
             Occupation.Magician =>
                 new Weapon("Lightning Bolt", 12, "zap~~~~~~"),
-
             Occupation.Thief =>
                 new Weapon("Dagger", 6, "-)==>"),
-
             Occupation.Archer =>
                 new Weapon("Long Bow", 8, "}     -->"),
-
-            _ => throw new InvalidOperationException(
-                "Unknown occupation.")
+            _ => throw new InvalidOperationException("Unknown occupation.")
         };
     }
 
-    // Roll Strength using D20 and racial modifiers
-    public void RollStrength(Die die)
+    // Consolidates the d20 calculation and tracking shared by all attributes.
+    private int RollAttribute(int modifier)
     {
-        ArgumentNullException.ThrowIfNull(die);
-
-        if (Race == Race.Halfling)
-        {
-            strengthModifier = -die.Roll(4);
-        }
-        else
-        {
-            strengthModifier = die.Roll(4);
-        }
-
         LastDieRoll = die.Roll(20);
-        LastModifier = strengthModifier;
-
-        Strength = Math.Max(
-            0,
-            LastDieRoll + strengthModifier);
+        LastModifier = modifier;
+        return LastDieRoll + modifier;
     }
 
-    // Roll Agility using D20 and racial modifiers
-    public void RollAgility(Die die)
+    private void RollStrength()
     {
-        ArgumentNullException.ThrowIfNull(die);
-
-        int agilityModifier = 0;
-
-        if (Race == Race.Elf ||
-            Race == Race.Halfling)
-        {
-            agilityModifier = die.Roll(4);
-        }
-
-        LastDieRoll = die.Roll(20);
-        LastModifier = agilityModifier;
-
-        Agility = LastDieRoll + agilityModifier;
+        // Preserve the original order: roll d4 first, then d20.
+        int modifier = die.Roll(4);
+        strengthModifier = Race == Race.Halfling ? -modifier : modifier;
+        Strength = Math.Max(0, RollAttribute(strengthModifier));
     }
 
-    // Roll Health using D20 and the Strength modifier
-    public void RollHealth(Die die)
+    private void RollAgility()
     {
-        ArgumentNullException.ThrowIfNull(die);
-
-        // Human, Elf, and Dwarf receive the
-        // same bonus used for Strength.
-        // Halfling receives no Health modifier.
-        int healthModifier =
-            Race == Race.Halfling ? 0 : strengthModifier;
-
-        LastDieRoll = die.Roll(20);
-        LastModifier = healthModifier;
-
-        Health = LastDieRoll + healthModifier;
+        // Only Elves and Halflings receive a d4 bonus.
+        int modifier = Race == Race.Elf || Race == Race.Halfling
+            ? die.Roll(4)
+            : 0;
+        Agility = RollAttribute(modifier);
     }
 
-    // Reduce player health when the dragon's attack lands (never below zero)
+    private void RollHealth()
+    {
+        // Halflings ignore the Strength penalty when rolling Health.
+        int modifier = Race == Race.Halfling ? 0 : strengthModifier;
+        Health = RollAttribute(modifier);
+    }
+
+    // Remains public because Combat needs to apply damage.
     public void TakeDamage(int damage)
     {
         if (damage < 0)
         {
             throw new ArgumentOutOfRangeException(
-                nameof(damage),
-                "Damage cannot be negative.");
+                nameof(damage), "Damage cannot be negative.");
         }
 
         Health = Math.Max(0, Health - damage);
     }
 
-    // Check if the player is still alive
+    // Game should finish attribute creation before beginning combat.
     public bool IsAlive()
     {
         return Health > 0;
     }
 
-    // Class Diagram: + string MissedMeTaunt()
-    // Said by the player after defending against the dragon (messages 140-143).
+    // Return one of message IDs 140-143 after a successful defense.
     public string MissedMeTaunt(Messages? messages = null)
     {
         messages ??= new Messages();
         return messages.GetMessage(140 + die.Roll(4) - 1);
     }
 
-    // Class Diagram: + string DisplayStats()
-    // Character summary from the Create Character Activity Diagram,
-    // in the player's chosen language (labels are messages 130-137).
+    // Return localized text; Game decides when and where to display it.
     public string DisplayStats(Messages? messages = null)
     {
         messages ??= new Messages();
