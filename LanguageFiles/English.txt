@@ -21,7 +21,7 @@
 # ---------- 1 - 99: Menu, language picker, settings (PBI Menu) ----------
 1=Choose your language / Elija su idioma / Choisissez votre langue:\n1. English\n2. Español\n3. Français
 2=Invalid choice. Please try again.
-3=Welcome to Choose Your Adventure Game
+3=Welcome to Choose Your Adventure Game. It takes place in the land of CYOAnia, where a terrible evil dragon has taken over. You are the only person affected by the dragon as you live in the country side.  You decide to leave home to save the world... I guess?
 4=Choose:\n  1. Create Character\n  2. Exit\n  3. Settings\nType '1', '2' or '3'.
 5=Adventure ends. Bye.
 6=This part of the adventure is still being built. Returning to the main menu.
